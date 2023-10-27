@@ -37,8 +37,15 @@ namespace Int24
             return GetIntValue().ToString();
         }
 
+        public static implicit operator Int24(byte value) => new Int24(value);
+
+        public static implicit operator Int24(short value) => new Int24(value);
+
         public static implicit operator Int24(int value) => new Int24(value);
-        public static explicit operator int(Int24 value) => value.LowBits;
+        public static explicit operator int(Int24 value) => value.GetIntValue();
+
+        public static implicit operator Int24(long value) => new Int24(value);
+        public static explicit operator long(Int24 value) => value.GetIntValue();
 
         public static bool operator ==(Int24 left, Int24 right)
         {
@@ -69,7 +76,22 @@ namespace Int24
 
         public static bool operator >(Int24 left, Int24 right)
         {
-            return left.GetIntValue() < right.GetIntValue();
+            return left.GetIntValue() > right.GetIntValue();
+        }
+
+        public static bool operator <=(Int24 left, Int24 right) 
+        { 
+            return (left.GetIntValue() < right.GetIntValue() || left == right);
+        }
+
+        public static bool operator >=(Int24 left, Int24 right)
+        {
+            return left.GetIntValue() > right.GetIntValue() || left == right;
+        }
+
+        public static Int24 operator -(Int24 number)
+        {
+            return -number.GetIntValue();
         }
 
     }
