@@ -1,4 +1,5 @@
 ﻿
+using System;
 namespace Int24
 {
     public struct Int24
@@ -6,32 +7,45 @@ namespace Int24
 
         public const int MAX_VALUE = 8388607;
         public const int MIN_VALUE = -8388608;
-        private sbyte LowBits = 0;
-        private sbyte MiddleBits = 0;
-        private sbyte HighBits = 0;
+        private readonly byte LowBits = 0;
+        private readonly byte MiddleBits = 0;
+        private readonly sbyte HighBits = 0;
 
 
         public Int24(long value)
         {
 
-            if (value < MIN_VALUE || value > MIN_VALUE)
+            if (value < MIN_VALUE || value > MAX_VALUE)
             {
-
+                throw new ArgumentOutOfRangeException($"Value is {value}. It is unacceptable value");
             }
 
             //В Int24 3 байта, так что берём три последних байта из числа и используем
             //побитовые сдвиги для того, чтобы в каждом поле оказался свой байт.
-            LowBits = (sbyte)value;
-            MiddleBits = (sbyte)(value >> 8);
+            LowBits = (byte)value;
+            MiddleBits = (byte)(value >> 8);
             HighBits = (sbyte)(value >> 16);
+        }
+
+        public Int24(sbyte highBits, byte middleBits, byte lowBits)
+        {
+            HighBits = highBits;
+            MiddleBits = middleBits;
+            LowBits = lowBits;
         }
 
         public int GetIntValue()
         {
             //"Складываем" при помощи побитового или
             //значения из  наших 3 байтов, попутно возвращая их на свои места.
-            return (LowBits | MiddleBits << 8 | HighBits << 16);
+            return LowBits | MiddleBits << 8 | HighBits << 16;
         }
+
+        public override int GetHashCode()
+        {
+            return GetIntValue();
+        }
+
         public override string ToString()
         {
             return GetIntValue().ToString();
@@ -49,24 +63,28 @@ namespace Int24
 
         public static bool operator ==(Int24 left, Int24 right)
         {
-            return left.LowBits == right.LowBits &&
-                    left.MiddleBits == right.MiddleBits &&
-                    left.HighBits == right.HighBits;
+            return left.GetIntValue() == right.GetIntValue();
         }
 
         public static bool operator !=(Int24 left, Int24 right)
         {
-            return left == right;
+            return !(left == right);
         }
 
         public static Int24 operator -(Int24 left, Int24 right)
         {
             return left.GetIntValue() - right.GetIntValue();
         }
+        
+        public static Int24 operator +(Int24 number)
+        {
+            return number.GetIntValue();
+        }
 
         public static Int24 operator +(Int24 left, Int24 right)
         {
             return left.GetIntValue() + right.GetIntValue();
+            
         }
 
         public static bool operator <(Int24 left, Int24 right)
@@ -92,6 +110,51 @@ namespace Int24
         public static Int24 operator -(Int24 number)
         {
             return -number.GetIntValue();
+        }
+
+        public static Int24 operator *(Int24 left, Int24 right)
+        {
+            return right.GetIntValue() * left.GetIntValue();
+        }
+
+        public static Int24 operator /(Int24 left, Int24 right)
+        {
+            return right.GetIntValue() / left.GetIntValue();
+        }
+
+        public static Int24 operator %(Int24 left, Int24 right)
+        {
+            return left.GetIntValue() % right.GetIntValue();
+        }
+
+        public static Int24 operator ++(Int24 number) 
+        {
+            return number.GetIntValue() + 1;
+        }
+
+        public static Int24 operator --(Int24 number)
+        {
+            return number.GetIntValue() - 1;
+        }
+
+        public static Int24 operator >>(Int24 number, Int24 shift)
+        {
+            return number.GetIntValue() >> shift.GetIntValue();
+        }
+
+        public static Int24 operator <<(Int24 number, Int24 shift)
+        {
+            return number.GetIntValue() >> shift.GetIntValue();
+        }
+
+        public static Int24 operator >>>(Int24 number, Int24 shift)
+        {
+            return number.GetIntValue() >>> shift.GetIntValue();
+        }
+
+        public static Int24 operator ~(Int24 number)
+        {
+            return ~number.GetIntValue();
         }
 
     }
