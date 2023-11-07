@@ -7,6 +7,8 @@ namespace Int24
 
         public const int MAX_VALUE = 8388607;
         public const int MIN_VALUE = -8388608;
+        private const byte MIDDLE_BITS_SHIFT = 8;
+        private const byte HIGH_BITS_SHIFT = 16;
         private readonly byte LowBits = 0;
         private readonly byte MiddleBits = 0;
         private readonly sbyte HighBits = 0;
@@ -23,8 +25,8 @@ namespace Int24
             //В Int24 3 байта, так что берём три последних байта из числа и используем
             //побитовые сдвиги для того, чтобы в каждом поле оказался свой байт.
             LowBits = (byte)value;
-            MiddleBits = (byte)(value >> 8);
-            HighBits = (sbyte)(value >> 16);
+            MiddleBits = (byte)(value >> MIDDLE_BITS_SHIFT);
+            HighBits = (sbyte)(value >> HIGH_BITS_SHIFT);
         }
 
         public Int24(sbyte highBits, byte middleBits, byte lowBits)
@@ -38,7 +40,7 @@ namespace Int24
         {
             //"Складываем" при помощи побитового или
             //значения из  наших 3 байтов, попутно возвращая их на свои места.
-            return LowBits | MiddleBits << 8 | HighBits << 16;
+            return LowBits | MiddleBits << MIDDLE_BITS_SHIFT | HighBits << HIGH_BITS_SHIFT;
         }
 
         public override int GetHashCode()
@@ -137,19 +139,19 @@ namespace Int24
             return number.GetIntValue() - 1;
         }
 
-        public static Int24 operator >>(Int24 number, Int24 shift)
+        public static Int24 operator >>(Int24 number, int shift)
         {
-            return number.GetIntValue() >> shift.GetIntValue();
+            return number.GetIntValue() >> shift;
         }
 
-        public static Int24 operator <<(Int24 number, Int24 shift)
+        public static Int24 operator <<(Int24 number, int shift)
         {
-            return number.GetIntValue() >> shift.GetIntValue();
+            return number.GetIntValue() >> shift;
         }
 
-        public static Int24 operator >>>(Int24 number, Int24 shift)
+        public static Int24 operator >>>(Int24 number, int shift)
         {
-            return number.GetIntValue() >>> shift.GetIntValue();
+            return number.GetIntValue() >>> shift;
         }
 
         public static Int24 operator ~(Int24 number)
